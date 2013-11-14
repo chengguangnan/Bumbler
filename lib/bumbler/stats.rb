@@ -1,6 +1,26 @@
 module Bumbler
   module Stats
     class << self
+      def _print_stats (key)
+        Bumbler::Progress.registry.each do |type, items|
+          puts "Stats for #{type} items:"
+
+          items.to_a.sort_by! {|n,d| d[key].to_i}.each do |name, info|
+            puts '  %s  %s' % [('%d' % info[key].to_i).rjust(8), name]
+          end
+        end
+        
+        self
+      end
+
+      def memory_delta
+        self._print_stats(:memory_delta)
+      end
+
+      def gc_objects
+        self._print_stats(:gc_objects)
+      end
+
       def tracked_items
         Bumbler::Progress.registry.each do |type, items|
           puts "Stats for #{type} items:"

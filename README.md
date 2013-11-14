@@ -12,7 +12,7 @@ Use Bumbler to track the load progress of your [Bundler](http://gembundler.com/)
 ### Step 1.5:
 Add bumbler to your Gemfile if you want to use `bundle exec`
 
-    gem 'bumbler'
+    gem 'bumbler', require: false
 
 ### Step 2:
 Add the following to your .profile, .bash_profile, .zshrc, .wtfrc or whatever shell config you use
@@ -29,7 +29,8 @@ Run a Bundler-based command, and you should see a spiffy progress bar, such as:
     > rails c
     [#########                                                                     ]
     ( 7/59)  492.04ms loaded data_mapper 
-    > Bumbler::Stats.all_slow_items  #will show you the gems which load the slowest.
-
+    > Bumbler::Stats.all_slow_items  # show slowest loading gems
+    > Bumbler::Stats.gc_objects      # gems making the most gc objects
+    > Bumbler::Stats.memory_delta    # gems causing the most memory increase
 
 And then maybe you'll also want to contribute some patches to make your favorite gems load faster.
