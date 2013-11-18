@@ -10,6 +10,14 @@ module Bumbler
       def registry
         @registry
       end
+
+      def gc_objs
+        ObjectSpace.count_objects[:TOTAL]
+      end
+
+      def current_process_memory(samples = 3)
+        (samples.times.map {`ps -o rss= -p #{$$}`.to_i}.inject(:+).to_f / samples).to_i
+      end
       
       def register_item(type, name)
         # Build a blank key for the item
@@ -22,12 +30,14 @@ module Bumbler
       
       def item_started(type, name)
         @curr_item = {:type => type, :name => name}
-        
+        @registry[type][name].merge!({:memory_start => self.current_process_memory(), :gc_objects_start => self.gc_objs()})
+
         self.render_progress
       end
       
       def item_finished(type, name, time)
-        @registry[type][name] = {:time => time}
+        mem = self.current_process_memory()
+        @registry[type][name].merge!({:time => time, :memory_delta => (mem - @registry[type][name][:memory_start]), :gc_objects => (gc_objs - @registry[type][name][:gc_objects_start])})
         
         @loaded_items  += 1
         
